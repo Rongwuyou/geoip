@@ -2,7 +2,7 @@ name: Build geoip.dat
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0,12 * * *"
+    - cron: "0 15 * * *"
   push:
     branches:
       - master
@@ -58,13 +58,6 @@ jobs:
         run: |
           go run ./
 
-      - name: Generate sha256 checksum for dat files
-        run: |
-          cd ./output/dat || exit 1
-          for name in $(ls *.dat); do
-            sha256sum ${name} > ./${name}.sha256sum
-          done
-
       - name: Generate sha256 checksum for mmdb files
         run: |
           cd ./output/maxmind || exit 1
@@ -84,8 +77,7 @@ jobs:
       - name: Move files to publish directory
         run: |
           mkdir -p publish
-          mv ./output/dat/*.dat ./output/dat/*.sha256sum ./output/maxmind/*.mmdb ./output/maxmind/*.sha256sum *.gz *.zip ./publish/
-          cp -fpPR ./output/text ./publish
+          mv ./output/maxmind/*.mmdb ./output/maxmind/*.sha256sum ./publish/
 
       - name: Git push assets to "release" branch
         run: |
